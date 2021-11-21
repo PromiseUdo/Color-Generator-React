@@ -1,37 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import * as React from 'react';
 import SingleColor from './SingleColor';
 import { HexColorPicker } from 'react-colorful';
-
+import {
+  Button,
+  TextField,
+  Box,
+  InputAdornment,
+  withStyles,
+} from '@mui/material';
 import Values from 'values.js';
+import { IconContext } from 'react-icons';
+
+import { FaPercent } from 'react-icons/fa';
 
 function App() {
   const [color, setColor] = useState('#f15025');
   const [percent, setPercent] = useState(10);
-  const [error, setError] = useState(false);
+  const [inputError, setInputError] = useState(false);
   const [list, setList] = useState(new Values('#f15025').all(percent));
   const [colorPicker, setColorPicker] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(percent);
+    // e.preventDefault();
+    // console.log(percent);
     try {
       let colors = new Values(color).all(percent);
       setList(colors);
-      setError(false);
+      setInputError(false);
     } catch (error) {
-      setError(true);
+      setInputError(true);
+    }
+  };
+
+  const handleChange = (color, percent) => {
+    try {
+      let colors = new Values(color).all(percent);
+      setList(colors);
+      setInputError(false);
+    } catch (error) {
+      setInputError(true);
     }
   };
 
   return (
     <>
-      <section className="container">
+      <Box className="container">
         <h3>Color Generator</h3>
-
         <button
           className="set-color-btn"
           style={{
             backgroundColor: !color ? '#f15025' : color,
+            margin: '0 8px',
           }}
           onClick={() => {
             setColorPicker(!colorPicker);
@@ -42,7 +62,10 @@ function App() {
             style={{ position: 'absolute' }}
             className="color-picker"
             color={color}
-            onChange={setColor}
+            onChange={(color) => {
+              setColor(color);
+              handleChange(color);
+            }}
             onMouseLeave={() => {
               setTimeout(() => {
                 setColorPicker(false);
@@ -52,30 +75,40 @@ function App() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <input
-            className={`${error ? 'error' : null} `}
-            type="text"
+          <TextField
+            variant="standard"
+            label="Hex Code"
+            color="primary"
+            error={inputError && 'error'}
             onChange={(e) => {
               setColor(e.target.value);
+              handleChange(e.target.value);
             }}
             value={color}
             placeholder="#f15025"
           />
-
-          <input
-            style={{ width: '80px', margin: '0 10px' }}
+          <TextField
             type="number"
-            value={percent}
+            defaultValue="10"
+            style={{ width: '100px', margin: '0 10px' }}
             onChange={(e) => {
               setPercent(parseInt(e.target.value));
+              handleChange(color, parseInt(e.target.value));
             }}
+            value={percent}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconContext.Provider value={{ color: 'beige' }}>
+                    <FaPercent />
+                  </IconContext.Provider>
+                </InputAdornment>
+              ),
+            }}
+            inputProps={{ min: 10, max: 100 }}
           />
-
-          <button className="btn" type="submit">
-            Submit
-          </button>
         </form>
-      </section>
+      </Box>
 
       <section className="colors">
         {list.map((color, index) => {
