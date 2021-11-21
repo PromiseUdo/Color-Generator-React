@@ -7,7 +7,7 @@ https://competent-allen-ef6391.netlify.app/
 
 # Installation & Set-up
 <ul>
-  <li>Install and use the latest version of node</li>
+  <li>Install latest version of node and dependencies</li>
   <code>npm install</code>
   
   <li>Start the development server</li>
